@@ -32,6 +32,17 @@ Auto trace name: [example.cpp.tlog](example.cpp)
 
 ```
 
+## Macros available
+
+- `trace_start()`  
+- `trace_init("filename" | FILE*)`  
+- `tracer()`  
+- `trace_info("format", args...)`  
+- `trace_enter()`  
+- `trace_break(numeric value)`  
+- `trace_return(auto type)`  
+- `trace_return_cb(value, type, std::function<std::string(type&)>)`  
+- `trace_call(function name, function args...)`  
 
 ## License
 

@@ -1,3 +1,11 @@
+# C::B
+bin/*
+obj/*
+*.tlog
+*.save
+*.bmarks
+*.layout
+
 # Prerequisites
 *.d
 

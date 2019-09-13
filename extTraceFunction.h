@@ -42,19 +42,19 @@
 #   define tracer()                                                                                           \
         tracer_(__FILE__, __FUNCTION__, __LINE__, __PRETTY_FUNCTION__)
 #   define tracer_(A,B,C,D)                                                                                   \
-        TraceLogger l_## B ##_trace(A,B,C,D)
+        TraceLogger l_## A ##_trace(A,B,C,D)
 #   define trace_init(V)                                                                                      \
         TraceFunction::instance().init(V);                                                                    \
         tracer()
 #   define trace_start()                                                                                      \
-    {                                                                                                         \
         std::string f(__FILE__);                                                                              \
-        size_t pos = f.find_last_of("/\\");                                                                   \
-        if (pos != std::string::npos)                                                                         \
-            f = f.substr(pos + 1, (f.length() - pos - 1)).c_str();                                            \
-        f.append(".tlog");                                                                                    \
-        trace_init(f);                                                                                        \
-    }
+        {                                                                                                     \
+            size_t pos = f.find_last_of("/\\");                                                               \
+            if (pos != std::string::npos)                                                                     \
+                f = f.substr(pos + 1, (f.length() - pos - 1)).c_str();                                        \
+            f.append(".tlog");                                                                                \
+        }                                                                                                     \
+        trace_init(f);
 #   define trace_info(V,...)                                                                                  \
         TraceFunction::instance().trace(__FUNCTION__, __LINE__, V, __VA_ARGS__)
 #   define trace_enter()                                                                                      \
@@ -124,6 +124,7 @@ private:
     static inline const char *sfmt_args      = "%s%*.*s- (args)   :[%s] -> %s\n";
     static inline const char *sfmt_begin     = " *-> (compiled)   :[%s %s]\n";
     static inline const char *sfmt_error     = " !-> (open file)  :[%s] -> %d, %s\n";
+    static inline const char *already_error  = " !-> (open file)  :[file already open] -> %p\n";
     //
     std::atomic<int32_t> m_indent;
     std::atomic<bool>    m_newline;
@@ -195,6 +196,11 @@ public:
     {
         if (s.empty())
             return;
+        if (m_fp)
+        {
+            ::fprintf(out_select(), already_error, m_fp);
+            return;
+        }
         m_newline = n;
         m_declsig = d;
         m_indent  = 1;

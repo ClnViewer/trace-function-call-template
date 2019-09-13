@@ -18,6 +18,10 @@
  | | |- (enter)  :[test3|24|example.cpp] -> int32_t test3(int32_t)
  | | | |- (args)   :[test4] -> 42,
  | | | |- (enter)  :[test4|8|example.cpp] -> int32_t test4(int32_t)
+ | | | | |- (args)   :[test5] -> 42, 5,
+ | | | | |- (enter)  :[test5|37|example.cpp] -> int32_t test5(int32_t, int32_t)
+ | | | | | |- (return) :[test5|39] -> 37
+ | | | | | |- (exit)   :[test5]
  | | | | |- (return) :[test4|10] -> custom return value - 37
  | | | | |- (exit)   :[test4]
  | | | |- (info)   :[test3|32] -> break from line: 32, reason: 32
@@ -32,10 +36,17 @@
 
 */
 
+int32_t test5(int32_t x, int32_t y)
+    {
+        tracer();
+        x = x - y;
+        trace_return(x);
+    }
+
 int32_t test4(int32_t x)
     {
         tracer();
-        x -= 5;
+        x = trace_call(test5, x, 5);
         trace_return_cb(
             x,              // return value
             int32_t,        // return type
